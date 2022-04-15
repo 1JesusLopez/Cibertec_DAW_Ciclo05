@@ -137,20 +137,44 @@ public class FrmManteProd extends JFrame {
 		contentPane.add(txtPrecio);
 
 		JLabel lblProveedor = new JLabel("Proveedor:");
-		lblProveedor.setBounds(220, 106, 102, 14);
+		lblProveedor.setBounds(240, 106, 102, 14);
 		contentPane.add(lblProveedor);
 
 		cboProveedores = new JComboBox();
-		cboProveedores.setBounds(310, 106, 86, 22);
+		cboProveedores.setBounds(327, 102, 86, 22);
 		contentPane.add(cboProveedores);
+
+		JButton btnBuscar = new JButton("Buscar");
+		btnBuscar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				buscarProducto();
+			}
+		});
+		btnBuscar.setBounds(324, 63, 89, 23);
+		contentPane.add(btnBuscar);
 
 		llenaCombo();
 	}
 
+	void buscarProducto() {
+		// fabrica --> DAO
+		EntityManagerFactory fabrica = Persistence.createEntityManagerFactory("mysql");
+		EntityManager em = fabrica.createEntityManager();
+		Producto p = em.find(Producto.class, txtCódigo.getText());
+		if (p == null) {
+			txtSalida.setText("Usuario no existe!!");
+		} else {
+			txtDescripcion.setText(p.getDes_prod());
+		}
+		em.close();
+	}
+
+	
+
 	void llenaCombo() {
 		EntityManagerFactory fabrica = Persistence.createEntityManagerFactory("mysql");
 		EntityManager em = fabrica.createEntityManager();
-		//Llenar combo de Categoria
+		// Llenar combo de Categoria
 		TypedQuery<Categoria> consulta = em.createQuery("select c from Categoria c", Categoria.class);
 		List<Categoria> lstCategorias = consulta.getResultList();
 
@@ -158,7 +182,7 @@ public class FrmManteProd extends JFrame {
 		for (Categoria c : lstCategorias) {
 			cboCategorias.addItem(c.getIdcategoria() + "-" + c.getDescripcion());
 		}
-		//Llenar combo de Proveedor
+		// Llenar combo de Proveedor
 		TypedQuery<Proveedor> consulta2 = em.createQuery("select c from Proveedor c", Proveedor.class);
 		List<Proveedor> lstProveedores = consulta2.getResultList();
 
